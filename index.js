@@ -23,9 +23,33 @@ async function run() {
         // const userReview = database.collection('reviews');
         // const userOrder = database.collection('user_order');
 
-        // Get Blogs API
+        app.get('/blog', async (req, res) => {
+            const cursor = productCollection.find({});
+            const packages = await cursor.toArray();
+            res.send(packages);
+        });
+        app.delete("/blog/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const result = await productCollection.deleteOne(query);
+        res.json(result);
+        });
+        app.put("/blog/:id", async (req, res) => {
+        const id = req.params.id;
+        const updatedUser = req.body;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+            $set: {
+            status: updatedUser.status,
+            },
+        };
+        const resut = await productCollection.updateOne(filter, updateDoc, options);
+        res.json(resut);
+        });
+        // Get Blogs API With Status
         app.get('/blogs', async (req, res) => {
-            const quarry = { status: 'Approved' };
+            const quarry = { status: "Approved" };
             const cursor = productCollection.find(quarry);
             const page = req.query.page;
             const size = parseInt(req.query.size);
