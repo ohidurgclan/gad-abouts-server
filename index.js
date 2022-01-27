@@ -28,6 +28,18 @@ async function run() {
             const packages = await cursor.toArray();
             res.send(packages);
         });
+        // get data by email
+        app.get('/blog/:email', async (req, res) => {
+            const cursor = productCollection.find({email: req.params.email});
+            const order = await cursor.toArray();
+            res.send(order);
+        });
+        app.post('/blog', async (req, res) => {
+            const reviewPost = req.body;
+            const result = await productCollection.insertOne(reviewPost);
+            console.log(result);
+            res.json(result)
+        });
         app.delete("/blog/:id", async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) };
@@ -73,7 +85,14 @@ async function run() {
             console.log(result);
             res.json(result)
         });
-
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            console.log('put', user);
+            const filter = { email: user.email };
+            const updateDoc = { $set: { role: 'admin' } };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        });
         // /Upsert For Google Sign in
         app.put('/users', async (req, res) => {
             const user = req.body;
@@ -98,7 +117,7 @@ async function run() {
             const quarry = { email: email };
             const user = await userCollection.findOne(quarry);
             let isAdmin = false;
-            if (user?.role === 'admin'){
+            if (user.role === "admin"){
                 isAdmin = true;
             }
             res.json({ admin: isAdmin});
