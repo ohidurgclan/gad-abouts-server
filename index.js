@@ -117,10 +117,10 @@ async function run() {
             const quarry = { email: email };
             const user = await userCollection.findOne(quarry);
             let isAdmin = false;
-            if (user.role === "admin"){
+            if (user?.role === "admin"){
                 isAdmin = true;
             }
-            res.json({ admin: isAdmin});
+            res.json({ admin: isAdmin });
         });
         // Approve Post API
         app.put("/user_post/:id", async (req, res) => {
